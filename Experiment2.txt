@@ -1,0 +1,297 @@
+mysql> use A56;
+Database changed
+mysql> create table sailors(sid int,sname varchar(20),rating int not null,age int not null  check(age>18),primary key(sid));
+Query OK, 0 rows affected (0.26 sec)
+
+mysql> create table boats(bid int,bname varchar(20),color varchar(20));
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> create table reserves(sid int,bid int,day date,primary key(sid,bid,day));
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(22,'Dustin',7,45);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(29,'Brutus',1,33);
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(31,'Lubber',8,55);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(32,'Andy',8,25);
+Query OK, 1 row affected (0.07 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(68,'Rusty',10,35);
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(69,'Horako',7,35);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(71,'Zorba',9,16);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(74,'Horation',3,35);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(85,'Art',7,25);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into sailors(sid,sname,rating,age) values(95,'Bob',3,63);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from sailors;
++-----+----------+--------+-----+
+| sid | sname    | rating | age |
++-----+----------+--------+-----+
+|  22 | Dustin   |      7 |  45 |
+|  29 | Brutus   |      1 |  33 |
+|  31 | Lubber   |      8 |  55 |
+|  32 | Andy     |      8 |  25 |
+|  68 | Rusty    |     10 |  35 |
+|  69 | Horako   |      7 |  35 |
+|  71 | Zorba    |      9 |  16 |
+|  74 | Horation |      3 |  35 |
+|  85 | Art      |      7 |  25 |
+|  95 | Bob      |      3 |  63 |
++-----+----------+--------+-----+
+10 rows in set (0.01 sec)
+
+mysql> insert into boats(bid,bname,color) values(101,'Interlake','Blue');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into boats(bid,bname,color) values(102,'Interlake','Red');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into boats(bid,bname,color) values(103,'Clipper','Green');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into boats(bid,bname,color) values(104,'Marine','Red');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> select * from boats;
++------+-----------+-------+
+| bid  | bname     | color |
++------+-----------+-------+
+|  101 | Interlake | Blue  |
+|  102 | Interlake | Red   |
+|  103 | Clipper   | Green |
+|  104 | Marine    | Red   |
++------+-----------+-------+
+4 rows in set (0.00 sec)
+
+mysql> insert into reserves(sid,bid,day) values(22,101,'1998-10-10');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into reserves(sid,bid,day) values(22,102,'1998-10-10');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into reserves(sid,bid,day) values(22,103,'1998-08-10');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into reserves(sid,bid,day) values(31,102,'1998-10-11');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into reserves(sid,bid,day) values(31,103,'1998-06-11');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into reserves(sid,bid,day) values(31,104,'1998-12-11');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into reserves(sid,bid,day) values(64,101,'1998-05-09');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into reserves(sid,bid,day) values(64,102,'1998-08-09');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into reserves(sid,bid,day) values(74,103,'1998-08-09');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from reserves;
++-----+-----+------------+
+| sid | bid | day        |
++-----+-----+------------+
+|  22 | 101 | 1998-10-10 |
+|  22 | 102 | 1998-10-10 |
+|  22 | 103 | 1998-08-10 |
+|  31 | 102 | 1998-10-11 |
+|  31 | 103 | 1998-06-11 |
+|  31 | 104 | 1998-12-11 |
+|  64 | 101 | 1998-05-09 |
+|  64 | 102 | 1998-08-09 |
+|  74 | 103 | 1998-08-09 |
++-----+-----+------------+
+9 rows in set (0.00 sec)
+
+mysql> create view sailors_view as(select sid,sname from sailors);
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> select * from sailors_view;
++-----+----------+
+| sid | sname    |
++-----+----------+
+|  22 | Dustin   |
+|  29 | Brutus   |
+|  31 | Lubber   |
+|  32 | Andy     |
+|  68 | Rusty    |
+|  69 | Horako   |
+|  71 | Zorba    |
+|  74 | Horation |
+|  85 | Art      |
+|  95 | Bob      |
++-----+----------+
+10 rows in set (0.00 sec)
+
+mysql> drop view sailors_view;
+Query OK, 0 rows affected (0.00 sec)
+
+
+mysql> create index i1  on sailors(sid,sname);
+Query OK, 0 rows affected (0.26 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create index i2  on sailors(sid,age);
+Query OK, 0 rows affected (0.22 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create index i3  on sailors(sid,rating);
+Query OK, 0 rows affected (0.30 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> show index from sailors;
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| sailors |          0 | PRIMARY  |            1 | sid         | A         |           8 |     NULL | NULL   |      | BTREE      |         |               |
+| sailors |          1 | i1       |            1 | sid         | A         |          10 |     NULL | NULL   |      | BTREE      |         |               |
+| sailors |          1 | i1       |            2 | sname       | A         |          10 |     NULL | NULL   | YES  | BTREE      |         |               |
+| sailors |          1 | i2       |            1 | sid         | A         |          10 |     NULL | NULL   |      | BTREE      |         |               |
+| sailors |          1 | i2       |            2 | age         | A         |          10 |     NULL | NULL   |      | BTREE      |         |               |
+| sailors |          1 | i3       |            1 | sid         | A         |          10 |     NULL | NULL   |      | BTREE      |         |               |
+| sailors |          1 | i3       |            2 | rating      | A         |          10 |     NULL | NULL   |      | BTREE      |         |               |
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+7 rows in set (0.00 sec)
+
+mysql> select sname ,age from sailors;
++----------+-----+
+| sname    | age |
++----------+-----+
+| Dustin   |  45 |
+| Brutus   |  33 |
+| Lubber   |  55 |
+| Andy     |  25 |
+| Rusty    |  35 |
+| Horako   |  35 |
+| Zorba    |  16 |
+| Horation |  35 |
+| Art      |  25 |
+| Bob      |  63 |
++----------+-----+
+10 rows in set (0.00 sec)
+
+mysql> select sname from sailors where rating>7;
++--------+
+| sname  |
++--------+
+| Lubber |
+| Andy   |
+| Rusty  |
+| Zorba  |
++--------+
+4 rows in set (0.00 sec)
+
+
+mysql> select sname from sailors,reserves where bid=103 and sailors.sid=reserves.sid;
++----------+
+| sname    |
++----------+
+| Dustin   |
+| Lubber   |
+| Horation |
++----------+
+3 rows in set (0.00 sec)
+
+mysql> select sid from reserves,boats where boats.color='Red' and boats.bid=reserves.bid;
++-----+
+| sid |
++-----+
+|  22 |
+|  31 |
+|  31 |
+|  64 |
++-----+
+4 rows in set (0.00 sec)
+
+
+
+mysql> select sname from reserves,boats,sailors where boats.color='Red' and boats.bid=reserves.bid and  sailors.sid=reserves.sid;
++--------+
+| sname  |
++--------+
+| Dustin |
+| Lubber |
+| Lubber |
++--------+
+3 rows in set (0.02 sec)
+
+
+mysql> select color from reserves,boats,sailors where sailors.sname='Lubber' and boats.bid=reserves.bid and  sailors.sid=reserves.sid;
++-------+
+| color |
++-------+
+| Red   |
+| Green |
+| Red   |
++-------+
+3 rows in set (0.00 sec)
+
+mysql> select avg(age) as avg from sailors where rating=7;
++---------+
+| avg     |
++---------+
+| 35.0000 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> select avg(age)as avg from sailors where rating=7;
++---------+
+| avg     |
++---------+
+| 35.0000 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> select count(distinct s.sname)as count from sailors s;
++-------+
+| count |
++-------+
+|    10 |
++-------+
+1 row in set (0.00 sec)
+
+mysql> select sum(rating)as total_rating from sailors;
++--------------+
+| total_rating |
++--------------+
+|           63 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select s.sname,s.age from sailors s where s.age=(select max(s1.age) from sailors s1);
++-------+-----+
+| sname | age |
++-------+-----+
+| Bob   |  63 |
++-------+-----+
+1 row in set (0.00 sec)
+
+mysql> select min(age)as min_age from sailors where rating=10;
++---------+
+| min_age |
++---------+
+|      35 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> 
+

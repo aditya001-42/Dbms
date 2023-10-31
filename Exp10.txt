@@ -1,0 +1,115 @@
+(base) kj-comp@kjcomp-OptiPlex-380:~$ mongo
+
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+t3      0.000GB
+test    0.000GB
+> use t3
+switched to db t3
+> db.order.insert({ "Item_Name": "aaa", "price": 25} )
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({ "Item_Name": "aaa", "price": 15} )
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({ "Item_Name": "aaa", "price": 10} )
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({ "Item_Name": "bbb", "price": 14} )
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({ "Item_Name": "bbb", "price": 16} )
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({ "Item_Name": "ccc", "price": 26} )
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({ "Item_Name": "ccc", "price": 17} )
+WriteResult({ "nInserted" : 1 })
+> var mapFunction1 = function() {
+... emit(this.Item_Name, this.price);
+... };
+
+var reduceFunction1 =function(keyItemName,valuesPrices) {return Array.sum(valuesPrices); };
+
+> db.order.mapReduce( mapFunction1, reduceFunction1, { out:"itemstotalprice"} );
+
+{ "result" : "itemstotalprice", "ok" : 1 }
+> db.itemstotalprice.find()
+{ "_id" : "ccc", "value" : 86 }
+{ "_id" : "bbb", "value" : 60 }
+{ "_id" : "aaa", "value" : 100 }
+
+> var map2 = function() {
+... emit(this.Item_Name,this.price);
+... };
+
+> var reduce2= function(name,
+... values) { var total = 0;
+... for (var index = 0; index < values.length; ++index)
+... {total+= values[index];
+... }
+... return total/values.length;
+... }
+
+> db.order.mapReduce( map2,reduce2, { out: "avgprice" } )
+{ "result" : "avgprice", "ok" : 1 }
+> db.avgprice.find();
+{ "_id" : "ccc", "value" : 21.5 }
+{ "_id" : "bbb", "value" : 15 }
+{ "_id" : "aaa", "value" : 16.666666666666668 }
+> db.orders.insertMany([
+... { _id: 1, cust_id: "Ant O. Knee", ord_date: new Date("2020-03-01"), price: 25, items: [ {
+... sku: "oranges", qty: 5, price: 2.5 }, { sku: "apples", qty: 5, price: 2.5 } ], status: "A" },
+... { _id: 2, cust_id: "Ant O. Knee", ord_date: new Date("2020-03-08"), price: 70, items: [ {
+... sku: "oranges", qty: 8, price: 2.5 }, { sku: "chocolates", qty: 5, price: 10 } ], status: "A" },
+... { _id: 3, cust_id: "Busby Bee", ord_date: new Date("2020-03-08"), price: 50, items: [ { sku:
+... "oranges", qty: 10, price: 2.5 }, { sku: "pears", qty: 10, price: 2.5 } ], status: "A" },
+... { _id: 4, cust_id: "Busby Bee", ord_date: new Date("2020-03-18"), price: 25, items: [ { sku:
+... "oranges", qty: 10, price: 2.5 } ], status: "A" },
+... { _id: 5, cust_id: "Busby Bee", ord_date: new Date("2020-03-19"), price: 50, items: [ { sku:
+... "chocolates", qty: 5, price: 10 } ], status: "A"},
+... { _id: 6, cust_id: "Cam Elot", ord_date: new Date("2020-03-19"), price: 35, items: [ { sku:
+... "carrots", qty: 10, price: 1.0 }, { sku: "apples", qty: 10, price: 2.5 } ], status: "A" },
+... { _id: 7, cust_id: "Cam Elot", ord_date: new Date("2020-03-20"), price: 25, items: [ { sku:
+... "oranges", qty: 10, price: 2.5 } ], status: "A" },
+... { _id: 8, cust_id: "Don Quis", ord_date: new Date("2020-03-20"), price: 75, items: [ { sku:"chocolates", qty: 5, price: 10 }, { sku: "apples", qty: 10, price: 2.5 } ], status: "A" },
+... { _id: 9, cust_id: "Don Quis", ord_date: new Date("2020-03-20"), price: 55, items: [ { sku:
+... "carrots", qty: 5, price: 1.0 }, { sku: "apples", qty: 10, price: 2.5 }, { sku: "oranges", qty: 10,
+... price: 2.5 } ], status: "A" },
+... { _id: 10, cust_id: "Don Quis", ord_date: new Date("2020-03-23"), price: 25, items: [ { sku:
+... "oranges", qty: 10, price: 2.5 } ], status: "A" }
+... ])
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		8,
+		9,
+		10
+	]
+}
+> var mapFunction1 = function() {
+... ... emit(this.cust_id, this.price);
+... ... };
+> var reduceFunction1 = function(keyCustId, valuesPrices) {
+... ... return Array.sum(valuesPrices);
+... ... };
+> db.orders.mapReduce(
+... ... mapFunction1,
+... ... reduceFunction1,
+... ... { out: "map_reduce_example" }
+... ... )
+{ "result" : "map_reduce_example", "ok" : 1 }
+
+> db.map_reduce_example.find().sort( { _id: 1 } )
+{ "_id" : "Ant O. Knee", "value" : 95 }
+{ "_id" : "Busby Bee", "value" : 125 }
+{ "_id" : "Cam Elot", "value" : 60 }
+{ "_id" : "Don Quis", "value" : 155 }
+
+> ^C
+bye
+

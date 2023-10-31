@@ -1,0 +1,163 @@
+Experiment No: 6
+Name : Aditya Ratnakar Kotame
+Roll No : A60
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| clg                |
+| mysql              |
+| performance_schema |
+| sys                |
+| t1                 |
++--------------------+
+6 rows in set (0.00 sec)
+
+mysql> use t1;
+Database changed
+mysql> create table stud_marks(Roll_no int, name varchar(20), total_marks int);
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> create table result(Roll_no int, name varchar(20), class varchar(20));
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> desc stud_marks;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| Roll_no     | int(11)     | YES  |     | NULL    |       |
+| name        | varchar(20) | YES  |     | NULL    |       |
+| total_marks | int(11)     | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+3 rows in set (0.04 sec)
+
+mysql> desc result;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| Roll_no | int(11)     | YES  |     | NULL    |       |
+| name    | varchar(20) | YES  |     | NULL    |       |
+| class   | varchar(20) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> insert into stud_marks values (101,'Anurag',1000),(102,'Aditya',1400),(103,'Saket',900),(104,'Yash',700);
+Query OK, 4 rows affected (0.09 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select * from stud_marks;
++---------+--------+-------------+
+| Roll_no | name   | total_marks |
++---------+--------+-------------+
+|     101 | Anurag |        1000 |
+|     102 | Aditya |        1400 |
+|     103 | Saket  |         900 |
+|     104 | Yash   |         700 |
++---------+--------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> delimiter $$
+mysql> drop function if exists func_grade $$
+Query OK, 0 rows affected, 1 warning (0.05 sec)
+
+mysql> create function func_grade(m int) returns varchar(20)
+    -> begin
+    -> declare grade varchar(20);
+    -> if m>1500 then set grade="No Grade";
+    -> elseif (m>=990 and m<=1500) then
+    -> set grade="Distinction";
+    -> elseif (m<=989 and m>=900) then
+    -> set grade="Higher Second Class";
+    -> else
+    -> set grade="Second Class";
+    -> end if;
+    -> return grade;
+    -> end $$
+Query OK, 0 rows affected (0.07 sec)
+
+
+mysql> delimiter $$
+mysql> drop procedure if exists proc_grade $$
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> create procedure proc_Grade(in rno int) begin
+    -> declare r int;
+    -> declare n varchar(20);
+    -> declare t int;
+    -> declare g varchar(20);
+    -> select s.Roll_no, s.name, s.total_marks into r,n,t from stud_marks s where(s.Roll_no=rno);
+    -> if r=rno then
+    -> set g=func_grade(t);
+    -> insert into result values(rno,n,g);
+    -> end if; 
+    -> end
+    -> $$
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from stud_marks;
+    -> $$
++---------+--------+-------------+
+| Roll_no | name   | total_marks |
++---------+--------+-------------+
+|     101 | Anurag |        1000 |
+|     102 | Aditya |        1400 |
+|     103 | Saket  |         900 |
+|     104 | Yash   |         700 |
++---------+--------+-------------+
+4 rows in set (0.01 sec)
+
+mysql> call proc_grade(101)
+    -> $$
+Query OK, 1 row affected (1.67 sec)
+
+mysql> select * from result; $$
++---------+--------+-------------+
+| Roll_no | name   | class       |
++---------+--------+-------------+
+|     101 | Anurag | Distinction |
++---------+--------+-------------+
+1 row in set (0.00 sec)
+
+mysql> call proc_grade(104) $$
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from result;
+    -> $$
++---------+--------+--------------+
+| Roll_no | name   | class        |
++---------+--------+--------------+
+|     101 | Anurag | Distinction  |
+|     104 | Yash   | Second Class |
++---------+--------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> call proc_grade(102) $$
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from result;
+    -> $$
++---------+--------+--------------+
+| Roll_no | name   | class        |
++---------+--------+--------------+
+|     101 | Anurag | Distinction  |
+|     104 | Yash   | Second Class |
+|     102 | Aditya | Distinction  |
++---------+--------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> call proc_grade(103) $$
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from result;
+    -> $$
++---------+--------+---------------------+
+| Roll_no | name   | class               |
++---------+--------+---------------------+
+|     101 | Anurag | Distinction         |
+|     104 | Yash   | Second Class        |
+|     102 | Aditya | Distinction         |
+|     103 | Saket  | Higher Second Class |
++---------+--------+---------------------+
+4 rows in set (0.00 sec)
